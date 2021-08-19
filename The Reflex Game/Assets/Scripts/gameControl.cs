@@ -10,7 +10,7 @@ public class gameControl : MonoBehaviour
     private bool secondPlayerCanMove=true;
     [SerializeField] private Text firstPlayerScore;
     [SerializeField] private Text secondPlayerScore;
-    int score1, score2;
+    public int score1, score2;
     [SerializeField] private float timing;
     [SerializeField] private GameObject startText, readyText, nowPressText;
     [SerializeField] private Text startingText;
@@ -20,15 +20,21 @@ public class gameControl : MonoBehaviour
     [SerializeField] private GameObject winRound1, winRound2;
     [SerializeField] private GameObject victory1, victory2;
     private bool newRound=true;
+    AudioSource audio;
+    [SerializeField] AudioClip newBGM;
+    private GameObject audioManager;
+    
+
+    
 
     
     // Start is called before the first frame update
     void Start()
     {
+        audio=GetComponent<AudioSource>();
+        audioManager = GameObject.FindGameObjectWithTag("audiomanager");
         pressTime=Random.Range(3.1f,8.2f);
         
-        
-
     }
 
     // Update is called once per frame
@@ -36,6 +42,7 @@ public class gameControl : MonoBehaviour
     {
         timing+=Time.deltaTime;
         playerControls();
+
         
         
         
@@ -50,7 +57,10 @@ public class gameControl : MonoBehaviour
             firstPlayerScore.text=""+score1;
             nowPressText.SetActive(false);
             winRound1.SetActive(true);
-            Debug.Log("Player 1");
+            audio.Stop();
+            audioManager.GetComponent<audioManager>().playRoundWinner();
+            
+            
 
         }
         if(Input.GetKeyDown(KeyCode.L) && secondPlayerCanMove && playerCanPress)
@@ -61,11 +71,16 @@ public class gameControl : MonoBehaviour
             secondPlayerScore.text=""+score2;
             nowPressText.SetActive(false);
             winRound2.SetActive(true);
+            audio.Stop();
+            audioManager.GetComponent<audioManager>().playRoundWinner();
             Debug.Log("Player 2");
         }
         if(Input.GetKeyDown(KeyCode.S) && newRound)
         {
             timing=0;
+            audio.Stop();
+            audio.clip=newBGM;
+            audio.Play();
             startingText.text="Starting...";
             startText.SetActive(true);
             readyText.SetActive(false);
@@ -78,6 +93,7 @@ public class gameControl : MonoBehaviour
             victory2.SetActive(false);
             winRound1.SetActive(false);
             winRound2.SetActive(false);
+
             
             
         }
@@ -105,18 +121,25 @@ public class gameControl : MonoBehaviour
             victory1.SetActive(true);
             victory2.SetActive(false);
             winRound1.SetActive(false);
-            newRound=false;            
+            newRound=false;
+            
+            
+            
         }
-        else if(score2>=3)
+        if(score2>=3)
         {
             victory2.SetActive(true);
             victory1.SetActive(false);
             winRound2.SetActive(false);
             newRound=false;
+            
+
         }
         
         
     }
+
+    
 
     
 }
